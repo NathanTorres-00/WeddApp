@@ -200,7 +200,7 @@ export default function Profile() {
               className="px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 flex items-center"
             >
               {saving ? (
-                <LoadingSpinner size="sm\" color="#ffffff" />
+                <LoadingSpinner size="sm" color="#ffffff" />
               ) : (
                 'Save Changes'
               )}
