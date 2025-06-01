@@ -11,6 +11,23 @@ export interface VendorFilters {
   searchQuery?: string;
 }
 
+interface VendorRow {
+  id: string;
+  name: string;
+  category: string;
+  rating: number;
+  review_count: number;
+  price_range: string;
+  description: string;
+  match_score: number;
+  match_explanation: string;
+  location_address: string;
+  location_distance: number;
+  image_url: string;
+  contact_email: string;
+  contact_phone: string;
+}
+
 export function useVendors(filters: VendorFilters = {}) {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,18 +47,11 @@ export function useVendors(filters: VendorFilters = {}) {
           query = query.eq('category', filters.category);
         }
 
-        if (filters.budgetRange) {
-          query = query
-            .gte('price_min', filters.budgetRange[0])
-            .lte('price_max', filters.budgetRange[1]);
-        }
-
         if (filters.minRating) {
           query = query.gte('rating', filters.minRating);
         }
 
         if (filters.locationRadius) {
-          // Note: This is a simplified version. In production, you'd use PostGIS for proper radius search
           query = query.lte('location_distance', filters.locationRadius);
         }
 
@@ -49,11 +59,33 @@ export function useVendors(filters: VendorFilters = {}) {
           query = query.or(`name.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`);
         }
 
-        const { data, error } = await query;
+        const { data, error: supabaseError } = await query;
 
-        if (error) throw error;
+        if (supabaseError) throw supabaseError;
 
-        setVendors(data as Vendor[]);
+        // Map database rows to frontend Vendor type
+        const mappedVendors: Vendor[] = (data as VendorRow[]).map(row => ({
+          id: row.id,
+          name: row.name,
+          category: row.category as VendorCategory,
+          rating: row.rating,
+          reviewCount: row.review_count,
+          priceRange: row.price_range,
+          description: row.description,
+          matchScore: row.match_score,
+          matchExplanation: row.match_explanation,
+          location: {
+            address: row.location_address,
+            distance: row.location_distance
+          },
+          imageUrl: row.image_url,
+          contactInfo: {
+            email: row.contact_email,
+            phone: row.contact_phone
+          }
+        }));
+
+        setVendors(mappedVendors);
         setError(null);
       } catch (err) {
         console.error('Error fetching vendors:', err);
