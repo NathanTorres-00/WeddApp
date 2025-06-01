@@ -46,7 +46,7 @@ export const Vendors: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
       <Toast />
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-[1920px] mx-auto px-8 py-12">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -62,7 +62,7 @@ export const Vendors: React.FC = () => {
                 placeholder="Search vendors..."
                 value={filters.searchQuery}
                 onChange={(e) => handleFilterChange({ searchQuery: e.target.value })}
-                className="w-72 pl-12 pr-6 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white/70 backdrop-blur-sm text-lg"
+                className="w-80 pl-12 pr-6 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white/70 backdrop-blur-sm text-lg"
               />
               <Search className="absolute left-4 top-3.5 text-gray-400 w-6 h-6" />
             </div>
@@ -75,7 +75,7 @@ export const Vendors: React.FC = () => {
           </div>
         </motion.div>
 
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex flex-col md:flex-row gap-12">
           <FilterSidebar
             filters={filters}
             onFilterChange={handleFilterChange}
@@ -86,7 +86,7 @@ export const Vendors: React.FC = () => {
           <div className="flex-1">
             {loading ? (
               <div className="flex justify-center items-center h-96">
-                <LoadingSpinner size="lg\" color="#3B82F6" />
+                <LoadingSpinner size="lg" color="#3B82F6" />
               </div>
             ) : (
               <VendorGrid
