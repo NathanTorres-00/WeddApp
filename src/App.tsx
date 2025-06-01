@@ -9,6 +9,7 @@ import { Vendors } from './pages/Vendors';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import ResetPassword from './pages/ResetPassword';
+import Profile from './pages/Profile';
 import PrivateRoute from './components/auth/PrivateRoute';
 import { Toast } from './components/shared/Toast';
 
@@ -27,10 +28,11 @@ function App() {
               <PrivateRoute>
                 <Layout>
                   <Routes>
-                    <Route path="/dashboard\" element={<Dashboard />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/budget" element={<Budget />} />
                     <Route path="/timeline" element={<Timeline />} />
                     <Route path="/vendors" element={<Vendors />} />
+                    <Route path="/profile" element={<Profile />} />
                     <Route path="/" element={<Navigate replace to="/dashboard" />} />
                   </Routes>
                 </Layout>
