@@ -86,7 +86,7 @@ export const Vendors: React.FC = () => {
           <div className="flex-1">
             {loading ? (
               <div className="flex justify-center items-center h-96">
-                <LoadingSpinner size="lg" color="#3B82F6" />
+                <LoadingSpinner size="lg\" color="#3B82F6" />
               </div>
             ) : (
               <VendorGrid
