@@ -28,7 +28,7 @@ function App() {
               <PrivateRoute>
                 <Layout>
                   <Routes>
-                    <Route path="/dashboard\" element={<Dashboard />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/budget" element={<Budget />} />
                     <Route path="/timeline" element={<Timeline />} />
                     <Route path="/vendors" element={<Vendors />} />
