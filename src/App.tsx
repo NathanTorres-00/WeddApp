@@ -7,6 +7,8 @@ import Budget from './pages/Budget';
 import Timeline from './pages/Timeline';
 import { Vendors } from './pages/Vendors';
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import ResetPassword from './pages/ResetPassword';
 import PrivateRoute from './components/auth/PrivateRoute';
 import { Toast } from './components/shared/Toast';
 
@@ -17,13 +19,15 @@ function App() {
         <Toast />
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route
             path="/"
             element={
               <PrivateRoute>
                 <Layout>
                   <Routes>
-                    <Route path="/dashboard\" element={<Dashboard />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/budget" element={<Budget />} />
                     <Route path="/timeline" element={<Timeline />} />
                     <Route path="/vendors" element={<Vendors />} />
