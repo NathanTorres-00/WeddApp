@@ -3,6 +3,7 @@ import { signIn } from '../../lib/auth';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Mail, Lock, LogIn } from 'lucide-react';
+import { LoadingSpinner } from '../shared/LoadingSpinner';
 
 export function LoginForm() {
   const [email, setEmail] = useState('');
@@ -63,7 +64,7 @@ export function LoginForm() {
         className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-xl shadow-sm text-base font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
       >
         {loading ? (
-          <LoadingSpinner size="sm\" color="#ffffff" />
+          <LoadingSpinner size="sm" color="#ffffff" />
         ) : (
           <>
             <LogIn className="w-5 h-5 mr-2" />
