@@ -3,10 +3,9 @@ import { FilterSidebar } from '../components/FilterSidebar';
 import { VendorGrid } from '../components/VendorGrid';
 import { useVendors, VendorFilters } from '../hooks/useVendors';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Search, SlidersHorizontal, Heart } from 'lucide-react';
 import { Toast } from '../components/shared/Toast';
-import ReactConfetti from 'react-confetti';
 import { useWindowSize } from '../hooks/useWindowSize';
 
 export const Vendors: React.FC = () => {
@@ -16,14 +15,19 @@ export const Vendors: React.FC = () => {
     locationRadius: 25,
     minRating: 0,
     searchQuery: '',
+    favoritesOnly: false,
   });
 
   const [showFilters, setShowFilters] = useState(false);
-  const { vendors, loading, error } = useVendors(filters);
+  const { vendors, loading, error, refreshFavorites } = useVendors(filters);
   const { width, height } = useWindowSize();
 
   const handleFilterChange = (newFilters: Partial<VendorFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
+  };
+
+  const toggleFavoritesOnly = () => {
+    setFilters(prev => ({ ...prev, favoritesOnly: !prev.favoritesOnly }));
   };
 
   if (error) {
@@ -56,6 +60,16 @@ export const Vendors: React.FC = () => {
             Find Vendors
           </h1>
           <div className="flex items-center space-x-4">
+            <button
+              onClick={toggleFavoritesOnly}
+              className={`p-3 rounded-xl transition-colors flex items-center ${
+                filters.favoritesOnly
+                  ? 'bg-red-100 text-red-600'
+                  : 'bg-white/70 text-gray-600 hover:text-red-600'
+              }`}
+            >
+              <Heart className={`w-6 h-6 ${filters.favoritesOnly ? 'fill-current' : ''}`} />
+            </button>
             <div className="relative">
               <input
                 type="text"
@@ -86,14 +100,15 @@ export const Vendors: React.FC = () => {
           <div className="flex-1">
             {loading ? (
               <div className="flex justify-center items-center h-96">
-                <LoadingSpinner size="lg\" color="#3B82F6" />
+                <LoadingSpinner size="lg" color="#3B82F6" />
               </div>
             ) : (
               <VendorGrid
                 vendors={vendors}
-                onContact={(vendor) => console.log('Contact:', vendor)}
-                onSave={(vendor) => console.log('Save:', vendor)}
-                onCompare={(vendor) => console.log('Compare:', vendor)}
+                onContact={(vendor) => {}}
+                onSave={(vendor) => {}}
+                onCompare={(vendor) => {}}
+                onFavoriteToggle={refreshFavorites}
               />
             )}
           </div>

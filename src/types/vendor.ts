@@ -21,6 +21,7 @@ export interface Vendor {
     email: string;
     phone: string;
   };
+  isFavorite?: boolean;
 }
 
 export interface FilterState {
@@ -29,4 +30,5 @@ export interface FilterState {
   locationRadius: number;
   minRating: number;
   searchQuery: string;
-} 
+  favoritesOnly?: boolean;
+}

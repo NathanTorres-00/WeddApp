@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Vendor } from '../types/vendor';
-import { LoadingSpinner } from '../components/shared/LoadingSpinner';
+import { getFavorites } from '../lib/vendors';
 
 export interface VendorFilters {
   category?: string;
@@ -9,6 +9,7 @@ export interface VendorFilters {
   locationRadius?: number;
   minRating?: number;
   searchQuery?: string;
+  favoritesOnly?: boolean;
 }
 
 interface VendorRow {
@@ -32,6 +33,20 @@ export function useVendors(filters: VendorFilters = {}) {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<string[]>([]);
+
+  useEffect(() => {
+    loadFavorites();
+  }, []);
+
+  const loadFavorites = async () => {
+    try {
+      const favoriteIds = await getFavorites();
+      setFavorites(favoriteIds);
+    } catch (err) {
+      console.error('Error loading favorites:', err);
+    }
+  };
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -42,7 +57,6 @@ export function useVendors(filters: VendorFilters = {}) {
           .from('vendors')
           .select('*');
 
-        // Apply filters
         if (filters.category && filters.category !== 'All') {
           query = query.eq('category', filters.category);
         }
@@ -59,12 +73,15 @@ export function useVendors(filters: VendorFilters = {}) {
           query = query.or(`name.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`);
         }
 
-        const { data, error: supabaseError } = await query;
+        if (filters.favoritesOnly && favorites.length > 0) {
+          query = query.in('id', favorites);
+        }
+
+        const { data: vendorData, error: supabaseError } = await query;
 
         if (supabaseError) throw supabaseError;
 
-        // Map database rows to frontend Vendor type
-        const mappedVendors: Vendor[] = (data as VendorRow[]).map(row => ({
+        const mappedVendors: Vendor[] = (vendorData as VendorRow[]).map(row => ({
           id: row.id,
           name: row.name,
           category: row.category as VendorCategory,
@@ -82,7 +99,8 @@ export function useVendors(filters: VendorFilters = {}) {
           contactInfo: {
             email: row.contact_email,
             phone: row.contact_phone
-          }
+          },
+          isFavorite: favorites.includes(row.id)
         }));
 
         setVendors(mappedVendors);
@@ -96,7 +114,7 @@ export function useVendors(filters: VendorFilters = {}) {
     };
 
     fetchVendors();
-  }, [filters]);
+  }, [filters, favorites]);
 
-  return { vendors, loading, error };
+  return { vendors, loading, error, favorites, refreshFavorites: loadFavorites };
 }
