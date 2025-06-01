@@ -15,7 +15,12 @@ export async function signIn(email: string, password: string) {
     email,
     password,
   });
-  if (error) throw error;
+  if (error) {
+    if (error.message.includes('Email not confirmed')) {
+      throw new Error('Email not confirmed');
+    }
+    throw error;
+  }
   return data;
 }
 
