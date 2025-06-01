@@ -26,7 +26,7 @@ export function ContactVendorModal({ vendor, isOpen, onClose }: ContactVendorMod
       onClose();
       setMessage('');
     } catch (error) {
-      toast.error('Failed to send message. Please try again.');
+      toast.error('Failed to send message');
     } finally {
       setLoading(false);
     }

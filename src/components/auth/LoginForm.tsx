@@ -3,7 +3,6 @@ import { signIn } from '../../lib/auth';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Mail, Lock, LogIn } from 'lucide-react';
-import { LoadingSpinner } from '../shared/LoadingSpinner';
 
 export function LoginForm() {
   const [email, setEmail] = useState('');
@@ -19,12 +18,8 @@ export function LoginForm() {
       await signIn(email, password);
       toast.success('Welcome back!');
       navigate('/dashboard');
-    } catch (error: any) {
-      if (error.message === 'Email not confirmed') {
-        toast.error('Please check your email to confirm your account');
-      } else {
-        toast.error('Invalid email or password');
-      }
+    } catch (error) {
+      toast.error('Invalid email or password');
     } finally {
       setLoading(false);
     }
