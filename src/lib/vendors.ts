@@ -31,43 +31,106 @@ export async function checkTables() {
 }
 
 export async function toggleFavorite(vendorId: string): Promise<boolean> {
-  const { data: existingFavorite } = await supabase
-    .from('favorites')
-    .select()
-    .eq('vendor_id', vendorId)
-    .single();
+  try {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) throw new Error('User not authenticated');
 
-  if (existingFavorite) {
-    const { error } = await supabase
+    const { data: existingFavorite } = await supabase
       .from('favorites')
-      .delete()
-      .eq('vendor_id', vendorId);
-    
-    if (error) throw error;
-    return false;
-  } else {
-    const { error } = await supabase
-      .from('favorites')
-      .insert({ vendor_id: vendorId });
-    
-    if (error) throw error;
-    return true;
+      .select()
+      .eq('vendor_id', vendorId)
+      .eq('user_id', user.user.id)
+      .single();
+
+    if (existingFavorite) {
+      const { error } = await supabase
+        .from('favorites')
+        .delete()
+        .eq('vendor_id', vendorId)
+        .eq('user_id', user.user.id);
+      
+      if (error) throw error;
+      return false;
+    } else {
+      const { error } = await supabase
+        .from('favorites')
+        .insert({ 
+          vendor_id: vendorId,
+          user_id: user.user.id,
+          created_at: new Date().toISOString()
+        });
+      
+      if (error) throw error;
+      return true;
+    }
+  } catch (error) {
+    console.error('Error toggling favorite:', error);
+    throw error;
   }
 }
 
 export async function getFavorites(): Promise<string[]> {
-  const { data, error } = await supabase
-    .from('favorites')
-    .select('vendor_id');
+  try {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return [];
 
-  if (error) throw error;
-  return data.map(f => f.vendor_id);
+    const { data, error } = await supabase
+      .from('favorites')
+      .select('vendor_id')
+      .eq('user_id', user.user.id);
+
+    if (error) throw error;
+    return data.map(f => f.vendor_id);
+  } catch (error) {
+    console.error('Error getting favorites:', error);
+    return [];
+  }
 }
 
 export async function sendVendorInquiry(vendorId: string, message: string): Promise<void> {
-  const { error } = await supabase
-    .from('vendor_inquiries')
-    .insert({ vendor_id: vendorId, message });
+  try {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) throw new Error('User not authenticated');
 
-  if (error) throw error;
+    const { error } = await supabase
+      .from('vendor_inquiries')
+      .insert({ 
+        vendor_id: vendorId, 
+        user_id: user.user.id,
+        message,
+        status: 'pending',
+        created_at: new Date().toISOString()
+      });
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error sending inquiry:', error);
+    throw error;
+  }
+}
+
+export async function getVendorInquiries() {
+  try {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) return [];
+
+    const { data, error } = await supabase
+      .from('vendor_inquiries')
+      .select(`
+        *,
+        vendors:vendor_id (
+          name,
+          category,
+          contact_info
+        )
+      `)
+      .eq('user_id', user.user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error getting inquiries:', error);
+    return [];
+  }
 }

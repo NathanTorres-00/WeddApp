@@ -26,7 +26,7 @@ export function ContactVendorModal({ vendor, isOpen, onClose }: ContactVendorMod
       onClose();
       setMessage('');
     } catch (error) {
-      toast.error('Failed to send message');
+      toast.error('Failed to send message. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -79,7 +79,7 @@ export function ContactVendorModal({ vendor, isOpen, onClose }: ContactVendorMod
                 className="px-6 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors flex items-center"
               >
                 {loading ? (
-                  <LoadingSpinner size="sm\" color="#ffffff" />
+                  <LoadingSpinner size="sm" color="#ffffff" />
                 ) : (
                   <>
                     <Send size={16} className="mr-2" />
